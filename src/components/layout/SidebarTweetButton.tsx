@@ -1,11 +1,21 @@
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { FaFeather } from 'react-icons/fa';
+import { newSelector } from '../../../redux-hooks';
+import { onOpen } from '../../../slice/loginSlice';
+import { newDispatch } from '../../../redux-hooks';
 
 const SidebarTweetButton = () => {
   const router = useRouter();
+  const loginState = newSelector((state)=> state.login)
+  const dispatch = newDispatch();
+
+  const onClick = useCallback(() => {
+    dispatch(onOpen())
+  },[loginState])
+
   return (
-    <div onClick={()=>router.push("/")}>
+    <div onClick={onClick}>
         <div className='
           mt-6
           lg:hidden

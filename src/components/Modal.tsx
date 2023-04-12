@@ -51,7 +51,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit, title, body, f
                 <div className='
                     relative
                     w-full
-                    lg:w-3/6
+                    lg:w-[500px]
                     my-6
                     mx-auto
                     lg:max-w-full
@@ -82,8 +82,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit, title, body, f
                             rounded-t
                         ">
                             <h3 className='text-3xl font-semibold text-white'>{title}</h3>
-                            <button>
-                                <AiOutlineClose size={20} className='p-1 ml-auto border-0 text-white hover:opacity-70 transition'/>
+                            <button onClick={handleClose} className='p-1 ml-auto border-0 text-white hover:opacity-70 transition'
+                            >
+                                <AiOutlineClose size={20} />
                             </button>
                         </div>
                         {/* Body */}

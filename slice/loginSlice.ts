@@ -16,7 +16,7 @@ const loginSlice = createSlice({
             state.isOpen = true
         },
         onClose : (state) => {
-            state.isOpen = true
+            state.isOpen = false
         }
     }
 }) 
