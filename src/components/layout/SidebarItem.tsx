@@ -1,16 +1,39 @@
+import { useRouter } from 'next/router'
+import {useCallback} from 'react'
 import React, { FC } from 'react'
 import { IconType } from 'react-icons/lib'
+import useCurrentUser from '../../../hooks/useCurrentUser'
+import { newDispatch, newSelector } from '../../../redux-hooks'
+import { onOpen } from '../../../slice/loginSlice'
 
 interface SidebarProps{
-  label : string,
-  href : string,
+  label : string
+  href : string
   icon : IconType
   onClick? : () => void
+  auth? : boolean
 }
 
-const SidebarItem : FC<SidebarProps>= ({label, href, icon : Icon, onClick}) => {
+const SidebarItem : FC<SidebarProps>= ({label, href, icon : Icon, onClick, auth}) => {
+  const router = useRouter();
+  const {data : currentUser} = useCurrentUser();
+  const loginState = newSelector((state)=>state.login);
+  const dispatch = newDispatch()
+  const handleClick = useCallback(() => {
+    if(onClick)
+    {
+      return onClick()
+    }
+    
+    if(auth && !currentUser){
+      dispatch(onOpen())
+    }
+    else if(href){
+      router.push(href)
+    }
+  },[router, href, onClick, loginState, auth, currentUser])
   return (
-    <div className='flex flex-row items-center'>
+    <div onClick={handleClick} className='flex flex-row items-center'>
       <div className='
         relative
         rounded-full
@@ -45,5 +68,7 @@ const SidebarItem : FC<SidebarProps>= ({label, href, icon : Icon, onClick}) => {
     </div>
   )
 }
+
+
 
 export default SidebarItem

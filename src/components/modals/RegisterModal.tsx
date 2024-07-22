@@ -4,17 +4,17 @@ import { inClose } from '../../../slice/registerSlice';
 import { onOpen } from '../../../slice/loginSlice';
 import Input from '../Input';
 import Modal from '../Modal';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { signIn } from 'next-auth/react';
+import { setName, setEmail, setPassword, setUsername } from '../../../slice/clientDetailsSlice';
 
 const LoginModal = () => {
 
   const loginState = newSelector((state) => state.login)
   const registerState = newSelector((state) => state.register)
+  const clientDetailsState = newSelector((state) => state.clientDetails )
   const dispatch = newDispatch();
-
-  const [name,setName] = useState('')
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
-  const [password,setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
 
@@ -29,42 +29,78 @@ const LoginModal = () => {
 
   const handleSubmit = useCallback(async () => {
     try{
-      setIsLoading(true);
+      setIsLoading(true); 
+        console.log(clientDetailsState)
+        await axios.post('/api/register', clientDetailsState)
 
+        toast.success('Account created successfully', {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          });
+
+          signIn('credentials',{
+            email : clientDetailsState.email,
+            password : clientDetailsState.password
+          })
+          dispatch(setName(""))
+          dispatch(setEmail(""))
+          dispatch(setPassword(""))
+          dispatch(setUsername(""))
       dispatch(inClose())
     }
     catch(error){
       console.log(error);
+      toast.error('Something went wrong', {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        });
     }
     finally{
       setIsLoading(false);
     }
-  },[registerState])
+  },[registerState, clientDetailsState])
 
   const bodyContent = (
     <div className='flex flex-col gap-4'>
       <Input
+        key="name"
         placeholder='Name'
-        onChange={(e)=>{setName(e.target.value)}}
-        value={name}
+        onChange={(e)=>{dispatch(setName(e.target.value))}}
+        value={clientDetailsState.name}
         disabled={isLoading}
       />
       <Input
+        key="username"
         placeholder='Username'
-        onChange={(e)=>{setUsername(e.target.value)}}
-        value={username}
+        onChange={(e)=>{dispatch(setUsername(e.target.value))}}
+        value={clientDetailsState.username}
         disabled={isLoading}
       />
       <Input
+        key="email"
         placeholder='Email'
-        onChange={(e)=>{setEmail(e.target.value)}}
-        value={email}
+        onChange={(e)=>{dispatch(setEmail(e.target.value))}}
+        value={clientDetailsState.email}
         disabled={isLoading}
       />
       <Input
+        key="password"
         placeholder='Password'
-        onChange={(e)=>{setPassword(e.target.value)}}
-        value={password}
+        type='password'
+        onChange={(e)=>{dispatch(setPassword(e.target.value))}}
+        value={clientDetailsState.password}
         disabled={isLoading}
       />
     </div>

@@ -5,25 +5,33 @@ import SidebarLogo from './SidebarLogo'
 import SidebarItem from './SidebarItem'
 import {BiLogOut} from 'react-icons/bi'
 import SidebarTweetButton from './SidebarTweetButton'
+import useCurrentUser from '../../../hooks/useCurrentUser'
+import { signOut } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 const Sidebar = () => {
+    const router = useRouter();
+    const {data : currentUser} = useCurrentUser();
     const items = [
         {
             label : "Home",
             href : "/",
-            icon : BsHouseFill
+            icon : BsHouseFill,
+            auth : false
         },
         {
             label : "Notifications",
             href : "/notifications",
-            icon : BsBellFill
+            icon : BsBellFill,
+            auth  : true
         },
         {
             label : "Profile",
-            href : "/users/123",
-            icon : FaUser
+            href : `/users/${currentUser ? currentUser.id : ""}`,
+            icon : FaUser,
+            auth  : true
         },
-    ]
+    ]  
   return (
     <div className='col-span-1 h-full pr-4 md:pr-6 '>
         <div className='flex flex-col items-end'>
@@ -35,11 +43,12 @@ const Sidebar = () => {
                             key={item.href}
                             href={item.href}
                             label={item.label}
-                            icon={item.icon}   
+                            icon={item.icon}
+                            auth={item.auth}   
                         />
                     )
                 })}
-                <SidebarItem onClick={()=>{}} icon={BiLogOut} label="Logout" href="/logout"/>
+                {currentUser && <SidebarItem onClick={()=> {signOut({callbackUrl : "http://localhost:3000"})}} icon={BiLogOut} label="Logout" href="/"/>}
                 <SidebarTweetButton/>
             </div>
         </div>
